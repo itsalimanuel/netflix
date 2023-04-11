@@ -87,7 +87,7 @@ export default function Video({ data }: any) {
             playing
           />
         ) : (
-          ""
+          "" 
         )}
         <div className=" absolute bottom-6 left-6 px-3 py-2 bg-orange-500 rounded-md cursor-pointer">
           vote: <span>{data?.vote_average}</span>
