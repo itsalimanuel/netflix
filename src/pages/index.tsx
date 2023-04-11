@@ -19,12 +19,26 @@ export async function getStaticProps() {
   return { props: { videosList } };
 }
 export default function Home({ videosList }: any) {
-  const [videos, setVideos] = useState();
+  interface Video {
+    // define the properties of a Video object
+  }
+
+  interface VideosResponse {
+    results: Video[];
+    // define other properties of the response object if any
+  }
+
+  const [videos, setVideos] = useState<VideosResponse | undefined>(undefined);
   useEffect(() => {
     setVideos(videosList);
   }, []);
-  const result = useSelector((state) => state?.favoriteList);
-  console.warn("result", result);
+  interface RootState {
+    favoriteList: {
+      // define the type of the favoriteList property
+    };
+  }
+  const result = useSelector((state: RootState) => state?.favoriteList);
+
   const searchVideo = async (e: any) => {
     const query = e.target.value;
     console.log(e.target.value);
@@ -32,7 +46,9 @@ export default function Home({ videosList }: any) {
       const res = await axios.get(
         `https://api.themoviedb.org/3/search/movie?api_key=ad3a1564ccec2469eacf89680773b645&query=${query}`
       );
-      setVideos(res.data)
+      if(res && res.data) {
+        setVideos(res.data);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -91,21 +107,23 @@ export default function Home({ videosList }: any) {
         <div className="mt-8">
           <h2 className="text-[22px] font-bold">Top Movie:</h2>
           <div className="grid grid-cols-6 max-xl:grid-cols-6 max-lg:grid-cols-3 max-sm:grid-cols-2 max-[475px]:grid-cols-1 gap-5 w-full">
-            {videos
-              ? videos.results.map((video: any) => (
-                  <MovieItem video={video} key={video.id} />
-                ))
-              : ""}
+            {videos && videos.results ? (
+              videos.results.map((video: any) => (
+                <MovieItem video={video} key={video.id} />
+              ))
+            ) : (
+              <p>No videos found</p>
+            )}
           </div>
         </div>
         {/* Favorite movies */}
         <div className="mt-8">
           <h2 className="text-[22px] font-bold">
-            Favorite Movie: {result?.length}
+            Favorite Movie: {result ? (result as string[]).length : ""}
           </h2>
           <div className="grid grid-cols-6 max-xl:grid-cols-6 max-lg:grid-cols-3 max-sm:grid-cols-2 max-[475px]:grid-cols-1 gap-5 w-full">
-            {result?.length > 0
-              ? result.map((item: any) => (
+            {(result as string[]).length > 0
+              ? (result as any[]).map((item: any) => (
                   <FavItem key={item.id} video={item} />
                 ))
               : ""}
