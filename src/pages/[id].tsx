@@ -59,7 +59,7 @@ export default function Video({ data }: any) {
       )
       .then((res) => {
         console.log(res.data.results[0]);
-        setVid(res.data.results[0]);
+        setVid(res.data.results[0].key);
       });
   }, []);
   return (
@@ -80,8 +80,8 @@ export default function Video({ data }: any) {
             height={"100%"}
             fallback={<Image src={placeholder} fill alt='placeholder'/>}
             url={
-              vid && vid.key
-                ? `https://www.youtube.com/embed/${vid.key}?rel=0`
+              vid && vid
+                ? `https://www.youtube.com/embed/${vid}?rel=0`
                 : ""
             }
             playing
