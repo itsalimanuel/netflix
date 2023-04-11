@@ -3,6 +3,7 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { ParsedUrlQuery } from "querystring";
 const ReactPlayer = dynamic(() => import("react-player/lazy"), { ssr: false });
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -19,8 +20,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return { paths, fallback: true };
 };
+interface Params extends ParsedUrlQuery {
+  id: string;
+}
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { id } = params;
+  const { id } = params as Params;
   const response = await axios.get(
     `https://api.themoviedb.org/3/movie/${id}?api_key=ad3a1564ccec2469eacf89680773b645`
   );
@@ -52,12 +56,16 @@ export default function Video({ data }: any) {
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
       <div className="relative w-full h-[500px] max-[475px]:h-[320px]">
-        <ReactPlayer
-          width={"100%"}
-          height={"100%"}
-          url={`https://www.youtube.com/embed/${vid?.key}?rel=0`}
-          playing
-        />
+        {vid ? (
+          <ReactPlayer
+            width={"100%"}
+            height={"100%"}
+            url={`https://www.youtube.com/embed/${vid?.key}?rel=0`}
+            playing
+          />
+        ) : (
+          ""
+        )}
         <div className=" absolute bottom-6 left-6 px-3 py-2 bg-orange-500 rounded-md cursor-pointer">
           vote: <span>{data?.vote_average}</span>
         </div>
