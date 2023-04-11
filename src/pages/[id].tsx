@@ -23,12 +23,28 @@ export const getStaticPaths: GetStaticPaths = async () => {
 interface Params extends ParsedUrlQuery {
   id: string;
 }
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { id } = params as Params;
+interface MovieProps {
+  data: {
+    // type definition for movieData
+  };
+}
+
+export const getStaticProps: GetStaticProps<
+  MovieProps,
+  ParsedUrlQuery
+> = async ({ params }) => {
+  if (!params || typeof params.id !== "string") {
+    return {
+      notFound: true,
+    };
+  }
+
+  const { id } = params;
   const response = await axios.get(
     `https://api.themoviedb.org/3/movie/${id}?api_key=ad3a1564ccec2469eacf89680773b645`
   );
   const movieData = response.data;
+
   return { props: { data: movieData } };
 };
 
