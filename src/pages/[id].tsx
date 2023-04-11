@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import { ParsedUrlQuery } from "querystring";
 const ReactPlayer = dynamic(() => import("react-player/lazy"), { ssr: false });
+import placeholder from '@/assets/movie/placeholder.jpg'
+import Image from "next/image";
 
 export const getStaticPaths: GetStaticPaths = async () => {
   // Fetch the list of movie IDs from the API
@@ -76,7 +78,12 @@ export default function Video({ data }: any) {
           <ReactPlayer
             width={"100%"}
             height={"100%"}
-            url={`https://www.youtube.com/embed/${vid?.key}?rel=0`}
+            fallback={<Image src={placeholder} fill alt='placeholder'/>}
+            url={
+              vid && vid.key
+                ? `https://www.youtube.com/embed/${vid.key}?rel=0`
+                : ""
+            }
             playing
           />
         ) : (
